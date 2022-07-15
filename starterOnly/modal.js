@@ -22,14 +22,52 @@ showModalBtn.forEach(btn => btn.addEventListener("click", toggleModal))
 // close modal event
 closeModalBtn.addEventListener('click', toggleModal)
 // onsubmit form event
-form.addEventListener("submit",submitForm )
+form.addEventListener("submit", submitForm)
 
 
 //FUNCTION
 
 // toggle modal form
 function toggleModal() {
-  modalbg.classList.toggle("bground--show");
+    modalbg.classList.toggle("bground--show");
+}
+
+function checkLength(input, length) {
+    const value = input.value;
+    // If the input is not empty and the value is minimum 2, return true
+    return value.trim().length > 0 && value.length >= length;
+}
+
+function checkEmail(input) {
+    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    const email = input.value;
+
+    // Return true if the email is valid, false if not
+    if (email.match(emailRegex)) {
+        return true
+    } else {
+        return false
+    }
+}
+
+function checkNumber(input) {
+    const number = input.value;
+
+    // If the input is
+    if (checkLength(input, 0) && parseInt(number)) {
+        return true;
+    } else {
+        return false
+    }
+}
+
+function radioChecked(radios) {
+    let locationChecked = false;
+    // Loop on array of radio, if one of them is checked return true, if not return false
+    radios.forEach(radio => {
+        if (radio.checked) locationChecked = true;
+    })
+    return locationChecked;
 }
 
 // on submit form data verification
@@ -44,11 +82,11 @@ function submitForm(e) {
     let location = [];
     let checkbox;
     // Useful var for validation
-    const emailRegex =  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-    let locationChecked;
+
 
     // Loop in the object and assign the variable to DOM item according to input "name" attribute
     Object.values(form).forEach(input => {
+        input.value.trim();
         switch (input.name) {
             case "first" :
                 first = input;
@@ -62,30 +100,29 @@ function submitForm(e) {
           case "quantity" :
             quantity = input;
             break;
-          case "location" :
-            location.push(input);
-            break;
-          case "checkbox1" :
-            checkbox = input;
-            break;
+            case "location" :
+                location.push(input);
+                break;
+            case "checkbox1" :
+                checkbox = input;
+                break;
         }
     })
 
-  // If one the locations input is check locationCheck = true
-  location.forEach(check => {
-    if(check.checked) locationChecked = true;
-  });
+    // Return true if all the condition is respected, false if not
+    const formValid = checkLength(first, 2) && checkLength(last, 2)
+    && checkEmail(email) && checkNumber(quantity)
+    && radioChecked(location) && checkbox.checked ? true : false;
 
-  // Return true if all the condition is respected, false if not
-  const formValid = first.value.length >=2 && last.value.length >=2 && email.value.match(emailRegex) && parseInt(quantity.value) && locationChecked && checkbox.checked ? true : false;
+    // If the form is valid close the modal and clear the inputs values
+    if (formValid) {
+        toggleModal();
+        Object.values(form).forEach(input => input.value = "")
 
-  // If the form is valid close the modal and clear the inputs values
-  if(formValid) {
-    toggleModal();
-    Object.values(form).forEach(input => input.value = "")
-
-    console.log("submit")
-  }
+        console.log("submit")
+    } else {
+        console.log("erreur")
+    }
 
 }
 
