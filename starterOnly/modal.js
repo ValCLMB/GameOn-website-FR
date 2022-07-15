@@ -79,11 +79,13 @@ function submitForm(e) {
   // Return true if all the condition is respected, false if not
   const formValid = first.value.length >=2 && last.value.length >=2 && email.value.match(emailRegex) && parseInt(quantity.value) && locationChecked && checkbox.checked ? true : false;
 
+  // If the form is valid close the modal and clear the inputs values
   if(formValid) {
+    toggleModal();
+    Object.values(form).forEach(input => input.value = "")
+
     console.log("submit")
   }
-
-
 
 }
 
