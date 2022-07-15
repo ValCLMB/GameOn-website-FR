@@ -36,14 +36,18 @@ function toggleModal() {
 function submitForm(e) {
     e.preventDefault();
     const form = e.target;
+    // All form inputs
     let first;
     let last;
     let email;
     let quantity;
     let location = [];
     let checkbox;
+    // Useful var for validation
+    const emailRegex =  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+    let locationChecked;
 
-
+    // Loop in the object and assign the variable to DOM item according to input "name" attribute
     Object.values(form).forEach(input => {
         switch (input.name) {
             case "first" :
@@ -66,7 +70,21 @@ function submitForm(e) {
             break;
         }
     })
-  
+
+  // If one the locations input is check locationCheck = true
+  location.forEach(check => {
+    if(check.checked) locationChecked = true;
+  });
+
+  // Return true if all the condition is respected, false if not
+  const formValid = first.value.length >=2 && last.value.length >=2 && email.value.match(emailRegex) && parseInt(quantity.value) && locationChecked && checkbox.checked ? true : false;
+
+  if(formValid) {
+    console.log("submit")
+  }
+
+
+
 }
 
 
