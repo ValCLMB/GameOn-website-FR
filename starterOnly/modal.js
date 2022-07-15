@@ -23,6 +23,21 @@ const quantity = document.querySelector('#quantity')
 const locationRadios = document.querySelectorAll("input[type='radio']")
 const conditionCheck = document.querySelector("#checkbox1");
 
+// Regex
+const numberRegex = /^[0-9]\d*$/;
+const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
+const lengthRegex = /^.{2,}$/;
+
+const inputsCheck = [
+    {input: first, regex: lengthRegex},
+    {input: last, regex: lengthRegex},
+    {input: email, regex: emailRegex},
+    {input: quantity, regex: numberRegex},
+    {input: locationRadios},
+    {input: conditionCheck}
+]
+
+
 //EVENT LISTENERS
 
 // launch modal event
@@ -40,58 +55,54 @@ function toggleModal() {
     modalbg.classList.toggle("bground--show");
 }
 
-function checkLength(input, length) {
-    const value = input.value;
-    // If the input is not empty and the value is minimum 2, return true
-    return value.trim().length > 0 && value.length >= length;
-}
-
-function checkEmail(input) {
-    const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
-    const email = input.value;
-
-    // Return true if the email is valid, false if not
-    if (email.match(emailRegex)) {
-        return true
-    } else {
-        return false
+function checkInput(input, regex) {
+    // If regex is not given, regex is null
+    if (typeof regex === 'undefined') {
+        regex = null
     }
-}
 
-function checkNumber(input) {
-    const number = input.value;
-
-    // If the input is
-    if (checkLength(input, 0) && parseInt(number)) {
-        return true;
-    } else {
-        return false
+    // If regex is given trim the value and test the value with regex
+    if (regex) {
+        const value = input.value.trim();
+        return regex.test(value)
     }
+
+    // If input is a NodeList(radios) return true if one of the radio is checked
+    if (NodeList.prototype.isPrototypeOf(input)) {
+        let checked = false;
+        input.forEach(radio => {
+            if (radio.checked) checked = true;
+        })
+        return checked;
+    }
+
+    // If input is checked return true
+    return input.checked;
+
 }
 
-function radioChecked(radios) {
-    let locationChecked = false;
-    // Loop on array of radio, if one of them is checked return true, if not return false
-    radios.forEach(radio => {
-        if (radio.checked) locationChecked = true;
+function validForm(form) {
+    let valid = true;
+    // If the input is valid set valid at true
+    form.forEach(item => {
+        checkInput(item.input, item.regex) ? item.valid = true : item.valid = false;
+        // If one of the item is invalid the form is invalid
+        if (!item.valid) valid = false;
     })
-    return locationChecked;
+    return valid;
 }
 
 // on submit form data verification
 function submitForm(e) {
     e.preventDefault();
 
-    // Return true if all the inputs is valid , false if not
-    const formValid = checkLength(first, 2) && checkLength(last, 2)
-    && checkEmail(email) && checkNumber(quantity)
-    && radioChecked(locationRadios) && conditionCheck.checked ? true : false;
+    const form = e.target;
+    const formValid = validForm(inputsCheck);
 
     // If the form is valid close the modal and clear the inputs values
     if (formValid) {
         toggleModal();
         Object.values(form).forEach(input => input.value = "")
-
         console.log("submit")
     } else {
         console.log("erreur")
