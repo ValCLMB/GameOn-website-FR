@@ -34,8 +34,39 @@ function toggleModal() {
 
 // on submit form data verification
 function submitForm(e) {
-  e.preventDefault();
-  console.log("submitForm");
+    e.preventDefault();
+    const form = e.target;
+    let first;
+    let last;
+    let email;
+    let quantity;
+    let location = [];
+    let checkbox;
+
+
+    Object.values(form).forEach(input => {
+        switch (input.name) {
+            case "first" :
+                first = input;
+                break;
+          case "last" :
+            last = input;
+            break;
+          case "email" :
+            email = input;
+            break;
+          case "quantity" :
+            quantity = input;
+            break;
+          case "location" :
+            location.push(input);
+            break;
+          case "checkbox1" :
+            checkbox = input;
+            break;
+        }
+    })
+  
 }
 
 
