@@ -28,7 +28,7 @@ const conditionCheck = document.querySelector("#checkbox1");
 const numberRegex = /^[0-9]\d*$/;
 const emailRegex = /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*$/;
 const lengthRegex = /^.{2,}$/;
-const dateRegex = /^(0[1-9]|1[012])[-/.](0[1-9]|[12][0-9]|3[01])[-/.](19|20)\\d\\d$/;
+const dateRegex = /^\d{4}-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[01])$/;
 
 const errorMsg = [
     "Veuillez entrer 2 caractères ou plus pour le champ du nom.",
@@ -112,7 +112,7 @@ function submitForm(e) {
 
     const form = e.target;
     const formValid = validForm(inputsCheck);
-
+    
     // If the form is valid close the modal and clear the inputs values
     if (formValid) {
         toggleModal();
