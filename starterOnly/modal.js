@@ -89,22 +89,31 @@ function checkInput(input, regex) {
 
 function validForm(form) {
     let valid = true;
-    let inputBeforeError;
+
     // If the input is invalid set valid to false
     form.forEach(item => {
         checkInput(item.input, item.regex) ? item.valid = true : item.valid = false;
-        // If one of the item is invalid the form is invalid, display error message (wip)
-        if (!item.valid) {
-            // If the input is a nodeList (radio check) inputBeforeError is the last radio, else is the input
-            NodeList.prototype.isPrototypeOf(item.input) ? inputBeforeError = item.input.item(item.input.length-1) : inputBeforeError = item.input;
 
-            // Display errors after th input div
-            inputBeforeError.closest(".formData").insertAdjacentHTML("afterend", `<div class="input-error">${item.error}</div>`);
-            item.errorDisplayed = true;
-            valid = false;
-        }
+        if(!item.valid) valid = false;
     })
     return valid;
+}
+
+function displayErrors(form) {
+    let inputBeforeError;
+    form.forEach(item => {
+        // Do not display error if its already displayed
+        if (!item.valid && !item.errorDisplayed) {
+                // If the input is a nodeList (radio check) inputBeforeError is the last radio, else is the input
+                NodeList.prototype.isPrototypeOf(item.input) ? inputBeforeError = item.input.item(item.input.length-1) : inputBeforeError = item.input;
+
+                // Display errors after the input div
+                inputBeforeError.closest(".formData").insertAdjacentHTML("afterend", `<div class="input-error">${item.error}</div>`);
+                item.errorDisplayed = true;
+        }
+
+
+    })
 }
 
 // on submit form data verification
@@ -120,6 +129,7 @@ function submitForm(e) {
         Object.values(form).forEach(input => input.value = "")
         console.log("submit")
     } else {
+        displayErrors(inputsCheck)
         console.log("erreur")
     }
 
