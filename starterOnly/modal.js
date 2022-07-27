@@ -36,7 +36,7 @@ const errorMsg = [
     "Vous devez entrer votre date de naissance.",
     "Veuillez saisir un nombre valide",
     "Vous devez choisir une option.",
-    "Vous devez vérifier que vous acceptez les termes et conditions.",
+    "Vous devez acceptez les termes et conditions.",
 ]
 const inputsCheck = [
     {input: first, regex: lengthRegex, error: errorMsg[0]},
@@ -67,13 +67,8 @@ function toggleModal() {
 }
 
 function checkInput(input, regex) {
-    // If regex is not given, regex is null
-    if (typeof regex === 'undefined') {
-        regex = null
-    }
-
     // If regex is given trim the value and test the value with regex
-    if (regex) {
+    if (!!regex) {
         const value = input.value.trim();
         return regex.test(value)
     }
@@ -94,12 +89,18 @@ function checkInput(input, regex) {
 
 function validForm(form) {
     let valid = true;
-    // If the input is valid set valid at true
+    let inputBeforeError;
+    // If the input is invalid set valid to false
     form.forEach(item => {
         checkInput(item.input, item.regex) ? item.valid = true : item.valid = false;
         // If one of the item is invalid the form is invalid, display error message (wip)
         if (!item.valid) {
-            item.input.insertAdjacentHTML("afterend", `<div class="input-error">${item.error}</div>`)
+            // If the input is a nodeList (radio check) inputBeforeError is the last radio, else is the input
+            NodeList.prototype.isPrototypeOf(item.input) ? inputBeforeError = item.input.item(item.input.length-1) : inputBeforeError = item.input;
+
+            // Display errors after th input div
+            inputBeforeError.closest(".formData").insertAdjacentHTML("afterend", `<div class="input-error">${item.error}</div>`);
+            item.errorDisplayed = true;
             valid = false;
         }
     })
