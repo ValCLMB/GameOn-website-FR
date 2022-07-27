@@ -138,6 +138,20 @@ function deleteErrors(inputObject, errorDiv) {
 
 }
 
+function displayToast(msg) {
+
+    // Create validation toast
+    document.querySelector("main").insertAdjacentHTML("beforeend",
+        `<div class="toast">
+                            <div class="toast-text">${msg}</div>
+                            <div class="toast-bar"></div>
+                         </div>`);
+
+    // Delete it after 5sec
+    setTimeout(() => {
+        document.querySelector(".toast").remove();
+    }, 5000)
+}
 
 // on submit form data verification
 function submitForm(e) {
@@ -147,26 +161,17 @@ function submitForm(e) {
     const formValid = validForm(inputsCheck);
     const validationMsg = "Merci ! Votre réservation a été reçue."
 
+
     // If the form is valid close the modal and clear the inputs values
     if (formValid) {
-        toggleModal();
+        // Delete the form values
         Object.values(form).forEach(input => input.value = "");
-        // Create validation toast
-        document.querySelector("main").insertAdjacentHTML("beforeend",
-                `<div class="toast">
-                            <div class="toast-text">${validationMsg}</div>
-                            <div class="toast-bar"></div>
-                         </div>`);
+        // Close the modal and display the validation toast
+        toggleModal();
+        displayToast(validationMsg)
 
-        // Delete it after 5sec
-        setTimeout(() => {
-           document.querySelector(".toast").remove();
-        }, 5000)
-
-        console.log("submit")
     } else {
         displayErrors(inputsCheck)
-        console.log("erreur")
     }
 
 }
