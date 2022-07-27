@@ -127,13 +127,12 @@ function deleteErrors(inputObject, errorDiv) {
         // On click on the radio button div call checkInput function, if return true delete error
         errorDiv.previousSibling.addEventListener('click', function () {
             if (checkInput(inputObject.input)) errorDiv.remove();
-            this.removeEventListener(arguments.callee);
         })
     } else {
         // On input change if the input is valid remove the error
         inputObject.input.addEventListener('input', function () {
             if (checkInput(inputObject.input, inputObject.regex)) errorDiv.remove();
-            this.removeEventListener(arguments.callee);
+
         })
     }
 
@@ -146,11 +145,24 @@ function submitForm(e) {
 
     const form = e.target;
     const formValid = validForm(inputsCheck);
+    const validationMsg = "Merci ! Votre réservation a été reçue."
 
     // If the form is valid close the modal and clear the inputs values
     if (formValid) {
         toggleModal();
-        Object.values(form).forEach(input => input.value = "")
+        Object.values(form).forEach(input => input.value = "");
+        // Create validation toast
+        document.querySelector("main").insertAdjacentHTML("beforeend",
+                `<div class="toast">
+                            <div class="toast-text">${validationMsg}</div>
+                            <div class="toast-bar"></div>
+                         </div>`);
+
+        // Delete it after 5sec
+        setTimeout(() => {
+           document.querySelector(".toast").remove();
+        }, 5000)
+
         console.log("submit")
     } else {
         displayErrors(inputsCheck)
