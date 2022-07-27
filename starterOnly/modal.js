@@ -1,10 +1,10 @@
 function editNav() {
-  var x = document.getElementById("myTopnav");
-  if (x.className === "topnav") {
-    x.className += " responsive";
-  } else {
-    x.className = "topnav";
-  }
+    var x = document.getElementById("myTopnav");
+    if (x.className === "topnav") {
+        x.className += " responsive";
+    } else {
+        x.className = "topnav";
+    }
 }
 
 // DOM Elements
@@ -36,7 +36,7 @@ const errorMsg = [
     "Vous devez entrer votre date de naissance.",
     "Veuillez saisir un nombre valide",
     "Vous devez choisir une option.",
-    "Vous devez vérifier que vous acceptez les termes et conditions.",
+    "Vous devez acceptez les termes et conditions.",
 ]
 const inputsCheck = [
     {input: first, regex: lengthRegex, error: errorMsg[0]},
@@ -67,13 +67,8 @@ function toggleModal() {
 }
 
 function checkInput(input, regex) {
-    // If regex is not given, regex is null
-    if (typeof regex === 'undefined') {
-        regex = null
-    }
-
     // If regex is given trim the value and test the value with regex
-    if (regex) {
+    if (!!regex) {
         const value = input.value.trim();
         return regex.test(value)
     }
@@ -94,17 +89,56 @@ function checkInput(input, regex) {
 
 function validForm(form) {
     let valid = true;
-    // If the input is valid set valid at true
+
+    // If the input is invalid set valid to false
     form.forEach(item => {
         checkInput(item.input, item.regex) ? item.valid = true : item.valid = false;
-        // If one of the item is invalid the form is invalid, display error message (wip)
-        if (!item.valid) {
-            item.input.insertAdjacentHTML("afterend", `<div class="input-error">${item.error}</div>`)
-            valid = false;
-        }
+
+        if (!item.valid) valid = false;
     })
     return valid;
 }
+
+function displayErrors(form) {
+    let divBeforeError;
+    form.forEach(item => {
+        // Do not display error if its already displayed
+        if (!item.valid && !item.errorDisplayed) {
+
+            // If the input is a nodeList (radio check) inputBeforeError is the last radio, else is the input
+            NodeList.prototype.isPrototypeOf(item.input) ? divBeforeError = item.input.item(item.input.length - 1) : divBeforeError = item.input;
+
+            divBeforeError = divBeforeError.closest('.formData');
+
+            // Display errors after the input div
+            divBeforeError.insertAdjacentHTML("afterend", `<div class="input-error">${item.error}</div>`);
+            item.errorDisplayed = true;
+
+            deleteErrors(item, divBeforeError.nextSibling)
+        }
+    })
+}
+
+
+// Add an input listener who delete error message if the input is valid.
+function deleteErrors(inputObject, errorDiv) {
+    // If it's a NodeList
+    if (NodeList.prototype.isPrototypeOf(inputObject.input)) {
+        // On click on the radio button div call checkInput function, if return true delete error
+        errorDiv.previousSibling.addEventListener('click', function () {
+            if (checkInput(inputObject.input)) errorDiv.remove();
+            this.removeEventListener(arguments.callee);
+        })
+    } else {
+        // On input change if the input is valid remove the error
+        inputObject.input.addEventListener('input', function () {
+            if (checkInput(inputObject.input, inputObject.regex)) errorDiv.remove();
+            this.removeEventListener(arguments.callee);
+        })
+    }
+
+}
+
 
 // on submit form data verification
 function submitForm(e) {
@@ -112,13 +146,14 @@ function submitForm(e) {
 
     const form = e.target;
     const formValid = validForm(inputsCheck);
-    
+
     // If the form is valid close the modal and clear the inputs values
     if (formValid) {
         toggleModal();
         Object.values(form).forEach(input => input.value = "")
         console.log("submit")
     } else {
+        displayErrors(inputsCheck)
         console.log("erreur")
     }
 
