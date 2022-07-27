@@ -442,9 +442,20 @@ input[data-error]::after {
   z-index: 1;
 }
 .hero-headline {
+  width: 350%;
   font-size: 6rem;
   font-weight: normal;
-  white-space: nowrap;
+  white-space: normal;
+}
+ @media screen and (max-width: 1200px) {
+  .hero-headline {
+    width: 230%;
+  }
+}
+@media screen and (max-width: 800px) {
+  .hero-headline {
+    width: 100%;
+  }
 }
 .hero-text {
   width: 146%;
@@ -549,6 +560,11 @@ footer {
   .copyrights {
     margin-top: 50px;
     text-align: center;
+  }
+  .toast {
+    width: 100%;
+    left: 0;
+    bottom: 5px;
   }
 }
 
