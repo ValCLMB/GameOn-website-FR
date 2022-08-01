@@ -77,7 +77,10 @@ function checkInput(input, regex) {
     if (NodeList.prototype.isPrototypeOf(input)) {
         let checked = false;
         input.forEach(radio => {
-            if (radio.checked) checked = true;
+            if (radio.checked) {
+                checked = true;
+                input.checked = radio.value;
+            }
         })
         return checked;
     }
@@ -157,10 +160,28 @@ function submitForm(e) {
     const form = e.target;
     const formValid = validForm(inputsCheck);
     const validationMsg = "Merci pour votre inscription";
-
+    let returnValue = [];
 
     // If the form is valid close the modal and clear the inputs values
     if (formValid) {
+
+        // Show input values in console
+        formData.forEach(item => {
+            // Normal input
+            if (item.children.length === 2) {
+                returnValue.push({name: item.children[1].id, value: item.children[1].value})
+            } else if (item.children.length === 4) { // checkboxes
+                item.querySelectorAll("input").forEach(checkbox => {
+                    returnValue.push({name: checkbox.id, value: checkbox.checked})
+                })
+            } else { // radio
+                item.querySelectorAll("input").forEach(radio => {
+                    if (radio.checked) returnValue.push({name: "location", value: true})
+                })
+            }
+        })
+        console.log(returnValue)
+
         // Delete the form values
         Object.values(form).forEach(input => input.value = "");
         // Display the validation message
