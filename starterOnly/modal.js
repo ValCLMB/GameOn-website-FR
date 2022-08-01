@@ -16,12 +16,12 @@ const formData = document.querySelectorAll(".formData");
 const form = document.querySelector(".modal-body form");
 
 // Form inputs
-const first = document.querySelector('#first')
-const last = document.querySelector('#last')
+const first = document.querySelector('#first');
+const last = document.querySelector('#last');
 const email = document.querySelector('#email');
-const birthdate = document.querySelector("#birthdate")
-const quantity = document.querySelector('#quantity')
-const locationRadios = document.querySelectorAll("input[type='radio']")
+const birthdate = document.querySelector("#birthdate");
+const quantity = document.querySelector('#quantity');
+const locationRadios = document.querySelectorAll("input[type='radio']");
 const conditionCheck = document.querySelector("#checkbox1");
 
 // Regex
@@ -37,7 +37,7 @@ const errorMsg = [
     "Veuillez saisir un nombre valide",
     "Vous devez choisir une option.",
     "Vous devez acceptez les termes et conditions.",
-]
+];
 const inputsCheck = [
     {input: first, regex: lengthRegex, error: errorMsg[0]},
     {input: last, regex: lengthRegex, error: errorMsg[0]},
@@ -46,17 +46,17 @@ const inputsCheck = [
     {input: quantity, regex: numberRegex, error: errorMsg[3]},
     {input: locationRadios, error: errorMsg[4]},
     {input: conditionCheck, error: errorMsg[5]}
-]
+];
 
 
 //EVENT LISTENERS
 
 // launch modal event
-showModalBtn.forEach(btn => btn.addEventListener("click", toggleModal))
+showModalBtn.forEach(btn => btn.addEventListener("click", toggleModal));
 // close modal event
-closeModalBtn.addEventListener('click', toggleModal)
+closeModalBtn.addEventListener('click', toggleModal);
 // onsubmit form event
-form.addEventListener("submit", submitForm)
+form.addEventListener("submit", submitForm);
 
 
 //FUNCTION
@@ -70,21 +70,23 @@ function checkInput(input, regex) {
     // If regex is given trim the value and test the value with regex
     if (!!regex) {
         const value = input.value.trim();
-        return regex.test(value)
+        return regex.test(value);
     }
 
     // If input is a NodeList(radios) return true if one of the radio is checked
     if (NodeList.prototype.isPrototypeOf(input)) {
         let checked = false;
         input.forEach(radio => {
-            if (radio.checked) checked = true;
+            if (radio.checked) {
+                checked = true;
+                input.checked = radio.value;
+            }
         })
         return checked;
     }
 
     // If input is checked return true
     return input.checked;
-
 }
 
 function validForm(form) {
@@ -114,7 +116,7 @@ function displayErrors(form) {
             divBeforeError.insertAdjacentHTML("afterend", `<div class="input-error">${item.error}</div>`);
             item.errorDisplayed = true;
 
-            deleteErrors(item, divBeforeError.nextSibling)
+            deleteErrors(item, divBeforeError.nextSibling);
         }
     })
 }
@@ -135,22 +137,20 @@ function deleteErrors(inputObject, errorDiv) {
 
         })
     }
-
 }
 
-function displayToast(msg) {
+function displayValidation(msg) {
 
-    // Create validation toast
-    document.querySelector("main").insertAdjacentHTML("beforeend",
-        `<div class="toast">
-                            <div class="toast-text">${msg}</div>
-                            <div class="toast-bar"></div>
-                         </div>`);
+    // Create validation div
+    document.querySelector(".modal-body")
+        .insertAdjacentHTML("beforeend",
+            `<div class="form-validate">
+                    <p>${msg}</p>
+                    <button class="button modal-btn">Fermer</button>
+            </div>`)
 
-    // Delete it after 5sec
-    setTimeout(() => {
-        document.querySelector(".toast").remove();
-    }, 5000)
+    // event listener for close modal
+    document.querySelector(".form-validate .modal-btn").addEventListener('click', toggleModal)
 }
 
 // on submit form data verification
@@ -159,21 +159,37 @@ function submitForm(e) {
 
     const form = e.target;
     const formValid = validForm(inputsCheck);
-    const validationMsg = "Merci ! Votre réservation a été reçue."
-
+    const validationMsg = "Merci pour votre inscription";
+    let returnValue = [];
 
     // If the form is valid close the modal and clear the inputs values
     if (formValid) {
+
+        // Show input values in console
+        formData.forEach(item => {
+            // Normal input
+            if (item.children.length === 2) {
+                returnValue.push({name: item.children[1].id, value: item.children[1].value})
+            } else if (item.children.length === 4) { // checkboxes
+                item.querySelectorAll("input").forEach(checkbox => {
+                    returnValue.push({name: checkbox.id, value: checkbox.checked})
+                })
+            } else { // radio
+                item.querySelectorAll("input").forEach(radio => {
+                    if (radio.checked) returnValue.push({name: "location", value: true})
+                })
+            }
+        })
+        console.log(returnValue)
+
         // Delete the form values
         Object.values(form).forEach(input => input.value = "");
-        // Close the modal and display the validation toast
-        toggleModal();
-        displayToast(validationMsg)
+        // Display the validation message
+        displayValidation(validationMsg);
 
     } else {
-        displayErrors(inputsCheck)
+        displayErrors(inputsCheck);
     }
-
 }
 
 
