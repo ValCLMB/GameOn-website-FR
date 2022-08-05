@@ -150,7 +150,11 @@ function displayValidation(msg) {
             </div>`)
 
     // event listener for close modal
-    document.querySelector(".form-validate .modal-btn").addEventListener('click', toggleModal)
+    document.querySelector(".form-validate .modal-btn").addEventListener('click', () => {
+        toggleModal();
+        // Remove the validation message when the modal close
+        document.querySelector(".form-validate").remove()
+    })
 }
 
 // on submit form data verification
@@ -164,7 +168,6 @@ function submitForm(e) {
 
     // If the form is valid close the modal and clear the inputs values
     if (formValid) {
-
         // Show input values in console
         formData.forEach(item => {
             // Normal input
@@ -176,7 +179,7 @@ function submitForm(e) {
                 })
             } else { // radio
                 item.querySelectorAll("input").forEach(radio => {
-                    if (radio.checked) returnValue.push({name: "location", value: true})
+                    if (radio.checked) returnValue.push({name: "location", value: radio.value})
                 })
             }
         })
