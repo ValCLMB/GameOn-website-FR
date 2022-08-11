@@ -73,7 +73,8 @@ function checkInput(input, regex) {
         return regex.test(value);
     }
 
-    // If input is a NodeList(radios) return true if one of the radio is checked
+    // If input is a NodeList(radios)
+    // return true if one of the radio is checked
     if (NodeList.prototype.isPrototypeOf(input)) {
         let checked = false;
         input.forEach(radio => {
@@ -153,7 +154,7 @@ function displayValidation(msg) {
     document.querySelector(".form-validate .modal-btn").addEventListener('click', () => {
         toggleModal();
         // Remove the validation message when the modal close
-        document.querySelector(".form-validate").remove()
+        window.location.reload();
     })
 }
 
